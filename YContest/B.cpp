@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 struct Animal {
@@ -12,6 +13,7 @@ int abs (int a) {
     if (a < 0) return -a;
     return a;
 }
+
 int isPair (int a, int b) {
     if ('a' <= a && a <= 'z' && 'A' <= b && b <= 'Z' ||
         'a' <= b && b <= 'z' && 'A' <= a && a <= 'Z')
@@ -19,57 +21,52 @@ int isPair (int a, int b) {
             return 1;
     return 0;
 }
-int isBigLetter (int a) {
-    if ('A' <= a && a <= 'Z') return 1;
+
+int isSmallLetter (int a) {
+    if ('a' <= a && a <= 'z') return 1;
     return 0;
 }
 
 int main(){
     string s;
     cin >> s;
-    vector<Animal> zoopark;
-    vector<int> ans;
-    int n = 0;
-    for (char i : s) {
-        Animal animal;
-        animal.letter = i;
-        if (isBigLetter(i)) {
-            n += 1;
-            animal.index = n;
+    Animal animal;
+    int n = s.size() / 2;
+    vector<Animal> zoo;
+    vector<int> ans(n);
+    int i = 0;
+    int j = 0;
+    int big = 0;
+    int small = 1;
+    while (j < 2 * n) {
+        animal.letter = s[j];
+        if (isSmallLetter(animal.letter)){
+            animal.index = small;
+            small++;
         }
-        zoopark.push_back(animal);
-    }
-    while (!zoopark.empty()) {
-
-//        for (auto i: zoopark)
-//            cout << i.letter;
-//        cout << endl;
-
-        int last = zoopark.size() - 1;
-        if (isPair(zoopark[0].letter, zoopark[last].letter)) {
-            if (isBigLetter(zoopark[0].letter)) ans.push_back(zoopark[0].index);
-            else ans.push_back(zoopark[0].index);
-            zoopark.erase(zoopark.begin() + zoopark.size() - 1);
-            zoopark.erase(zoopark.begin());
-        } else {
-            int sizeBefore = zoopark.size();
-            for (int i = 1; i < zoopark.size(); i++) {
-                if (isPair(zoopark[i - 1].letter, zoopark[i].letter)) {
-                    if (isBigLetter(zoopark[i - 1].letter)) ans.push_back(zoopark[i - 1].index);
-                    else ans.push_back(zoopark[i].index);
-                    zoopark.erase(zoopark.begin() + i - 1);
-                    zoopark.erase(zoopark.begin() + i - 1);
-                }
-            }
-            if (sizeBefore == zoopark.size()) {
-                cout << "Impossible";
-                return 0;
-            }
+        else {
+            animal.index = big;
+            big++;
         }
-
+        zoo.push_back(animal);
+        if (i > 0 && isPair(zoo[i - 1].letter, zoo[i].letter)) {
+            if (isSmallLetter(zoo[i - 1].letter)) {
+                ans[zoo[i].index] = zoo[i - 1].index;
+            } else {
+                ans[zoo[i - 1].index] = zoo[i].index;
+            }
+            zoo.pop_back();
+            zoo.pop_back();
+            i -= 2;
+        }
+        i += 1;
+        j += 1;
     }
-    cout << "Possible" << endl;
-    for (int i: ans) cout << i << " ";
-
+    if (zoo.empty()) {
+        cout << "Possible" << endl;
+        for (auto it: ans) cout << it << " ";
+    } else {
+        cout << "Impossible";
+    }
     return 0;
 }
