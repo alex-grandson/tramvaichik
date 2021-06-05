@@ -27,10 +27,9 @@ int right = INT_MAX;
 
 void DFS (int v, int type) {
     used[v] = 1;
-    for (int i = 0; i < n; i++) 
+    for (int i = 0; i < n; i++)
         if (!used[i] && (type ? link_table[i][v] : link_table[v][i]))
             DFS(i, type);
-    
 }
 
 int visited_all () {
@@ -39,7 +38,9 @@ int visited_all () {
     return 1;
 }
 
-
+void clear_used() {
+    for (bool & i : used) i = false;
+}
 
 bool linked_graph(int *middle) {
     for (int i = 0; i < n; i++)
@@ -49,10 +50,10 @@ bool linked_graph(int *middle) {
         // связаны при текущем значении middle.
         // middle - размер бака. тот вес ребер, который еще удовлетворяет
 
-    memset(used, 0, sizeof(used)); // подготовка перед DFS.
+    clear_used(); // подготовка перед DFS.
     DFS(0, 0);
     if (visited_all()) {
-        memset(used, 0, sizeof(used));
+        clear_used();
         DFS(0, 1);
         if (visited_all())
             return true;
@@ -61,8 +62,6 @@ bool linked_graph(int *middle) {
     } else
         return false;
 }
-
-
 
 int main() {
     scanf("%d", &n);
